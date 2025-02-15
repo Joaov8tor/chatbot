@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot com API de Tradução</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chat-header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .chat-box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            height: 300px;
+            overflow-y: scroll;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        #user-input {
+            width: 75%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 20%;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .user {
+            text-align: left;
+            background-color: #e1f5fe;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .bot {
+            text-align: left;
+            background-color: #f9fbe7;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Chatbot</h2>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === "") return;
+            
+            // Exibe a mensagem do usuário
+            appendMessage("Você: " + userInput, "user");
+            
+            // Limpa o campo de input
+            document.getElementById('user-input').value = "";
+
+            // Chama a API para obter a resposta do Chatbot
+            fetch(`http://helya.pylex.xyz:10234/api/Chatgpt/v4/?msg=${encodeURIComponent(userInput)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const botResponse = data.msg; // A resposta do Chatbot
+                    appendMessage("Chatbot: " + botResponse, "bot");
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar a resposta:', error);
+                    appendMessage("Chatbot: Ocorreu um erro ao tentar buscar a resposta.", "bot");
+                });
+        }
+
+        function appendMessage(message, sender) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Rolagem automática para a última mensagem
+        }
+    </script>
+
+</body>
+</html>
